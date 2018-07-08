@@ -226,11 +226,6 @@ Prefab:
       propertyPath: mapNetworkManager
       value: 
       objectReference: {fileID: 1127565838}
-    - target: {fileID: 114946005600446132, guid: d2c274d504629844ba9d4993edf72817,
-        type: 2}
-      propertyPath: startCentralOnAwake
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: d2c274d504629844ba9d4993edf72817, type: 2}
   m_IsPrefabParent: 0
@@ -361,26 +356,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
---- !u!1 &876183632 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 1437744010153436, guid: aea5f7c25eab33041b253c93bea7b0fd,
-    type: 2}
-  m_PrefabInternal: {fileID: 1941701821}
---- !u!114 &876183633
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 876183632}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b5e08d8ccbfded44bb2400909f8f4376, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  logFileName: log_client
-  logAreaHeight: 100
-  openLogDir: 0
-  showLogSize: 20
 --- !u!1 &1127565837
 GameObject:
   m_ObjectHideFlags: 0
