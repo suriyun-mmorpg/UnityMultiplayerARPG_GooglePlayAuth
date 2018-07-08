@@ -38,9 +38,8 @@ namespace MultiplayerARPG.MMO
                 if (success)
                 {
                     // When google play login success, send login request to server
-                    var email = PlayGamesPlatform.Instance.GetUserEmail();
                     var idToken = PlayGamesPlatform.Instance.GetIdToken();
-                    RequestGooglePlayLogin(email, idToken);
+                    RequestGooglePlayLogin(idToken);
                 }
                 else
                 {
@@ -50,15 +49,15 @@ namespace MultiplayerARPG.MMO
             });
         }
 
-        private void RequestGooglePlayLogin(string email, string idToken)
+        private void RequestGooglePlayLogin(string idToken)
         {
             var uiSceneGlobal = UISceneGlobal.Singleton;
-            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(idToken))
+            if (string.IsNullOrEmpty(idToken))
             {
-                uiSceneGlobal.ShowMessageDialog("Cannot login", "User Email or ID token is empty");
+                uiSceneGlobal.ShowMessageDialog("Cannot login", "ID token is empty");
                 return;
             }
-            MMOClientInstance.Singleton.RequestGooglePlayLogin(email, idToken, OnLogin);
+            MMOClientInstance.Singleton.RequestGooglePlayLogin(idToken, OnLogin);
         }
 
         public void OnLogin(AckResponseCode responseCode, BaseAckMessage message)
