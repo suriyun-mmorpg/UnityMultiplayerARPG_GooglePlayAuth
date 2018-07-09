@@ -16,6 +16,7 @@ namespace MultiplayerARPG.MMO
 
         private void Awake()
         {
+#if UNITY_ANDROID
             var builder = new PlayGamesClientConfiguration.Builder()
                 // requests the email address of the player be available.
                 // Will bring up a prompt for consent.
@@ -29,10 +30,12 @@ namespace MultiplayerARPG.MMO
             var config = builder.Build();
             PlayGamesPlatform.InitializeInstance(config);
             PlayGamesPlatform.DebugLogEnabled = debugLogEnabled;
+#endif
         }
 
         public void OnClickGooglePlayLogin()
         {
+#if UNITY_ANDROID
             PlayGamesPlatform.Instance.SignOut();
             PlayGamesPlatform.Instance.Authenticate((success, message) => {
                 if (success)
@@ -47,6 +50,9 @@ namespace MultiplayerARPG.MMO
                     UISceneGlobal.Singleton.ShowMessageDialog("Cannot Login", "Cannot Login with Google Play: " + message);
                 }
             });
+#else
+            Debug.Log("Only Android can login with Google Play");
+#endif
         }
 
         private void RequestGooglePlayLogin(string idToken)
