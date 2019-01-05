@@ -57,7 +57,7 @@ namespace MultiplayerARPG.MMO
 
         private void RequestGooglePlayLogin(string idToken)
         {
-            var uiSceneGlobal = UISceneGlobal.Singleton;
+            UISceneGlobal uiSceneGlobal = UISceneGlobal.Singleton;
             if (string.IsNullOrEmpty(idToken))
             {
                 uiSceneGlobal.ShowMessageDialog("Cannot login", "ID token is empty");
@@ -68,11 +68,11 @@ namespace MultiplayerARPG.MMO
 
         public void OnLogin(AckResponseCode responseCode, BaseAckMessage message)
         {
-            var castedMessage = (ResponseUserLoginMessage)message;
+            ResponseUserLoginMessage castedMessage = (ResponseUserLoginMessage)message;
             switch (responseCode)
             {
                 case AckResponseCode.Error:
-                    var errorMessage = string.Empty;
+                    string errorMessage = string.Empty;
                     switch (castedMessage.error)
                     {
                         case ResponseUserLoginMessage.Error.AlreadyLogin:
