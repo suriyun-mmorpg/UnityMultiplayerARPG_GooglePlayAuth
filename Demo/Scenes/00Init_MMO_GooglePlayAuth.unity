@@ -317,7 +317,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentLogLevel: 2
-  connectKey: SampleConnectKey
   networkAddress: localhost
   networkPort: 7770
   useWebSocket: 0
@@ -326,10 +325,10 @@ MonoBehaviour:
   updateServerTimeDuration: 5
   doNotEnterGameOnConnect: 0
   doNotDestroyOnSceneChanges: 0
+  sampleMessageToCentralServer: QWERTY
   writeAddonLog: 0
   mapInstanceId: 
   centralTransportFactory: {fileID: 0}
-  centralConnectKey: SampleConnectKey
   centralNetworkAddress: 127.0.0.1
   centralNetworkPort: 6000
   machineAddress: 127.0.0.1
@@ -735,6 +734,8 @@ MonoBehaviour:
     keyCode: 9
   - keyName: Reload
     keyCode: 114
+  - keyName: ExitVehicle
+    keyCode: 120
 --- !u!114 &1379718505
 MonoBehaviour:
   m_ObjectHideFlags: 0
