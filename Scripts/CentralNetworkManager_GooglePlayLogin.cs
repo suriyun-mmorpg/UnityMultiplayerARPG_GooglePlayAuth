@@ -11,6 +11,12 @@ namespace MultiplayerARPG.MMO
 {
     public partial class CentralNetworkManager
     {
+        [DevExtMethods("RegisterServerMessages")]
+        protected void RegisterServerMessages_GooglePlayLogin()
+        {
+            RegisterServerMessage(MMOMessageTypes.RequestGooglePlayLogin, HandleRequestGooglePlayLogin);
+        }
+
         public uint RequestGooglePlayLogin(string idToken, AckMessageCallback callback)
         {
             RequestGooglePlayLoginMessage message = new RequestGooglePlayLoginMessage();
