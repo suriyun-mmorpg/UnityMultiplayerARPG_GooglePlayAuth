@@ -21,7 +21,7 @@ namespace MultiplayerARPG.MMO
         {
             RequestGooglePlayLoginMessage message = new RequestGooglePlayLoginMessage();
             message.idToken = idToken;
-            return Client.ClientSendAckPacket(DeliveryMethod.ReliableOrdered, MMOMessageTypes.RequestGooglePlayLogin, message, callback);
+            return ClientSendRequest(MMOMessageTypes.RequestGooglePlayLogin, message, callback);
         }
 
         protected void HandleRequestGooglePlayLogin(LiteNetLibMessageHandler messageHandler)
@@ -79,7 +79,7 @@ namespace MultiplayerARPG.MMO
             responseMessage.error = error;
             responseMessage.userId = userId;
             responseMessage.accessToken = accessToken;
-            ServerSendPacket(connectionId, DeliveryMethod.ReliableOrdered, MMOMessageTypes.ResponseUserLogin, responseMessage);
+            ServerSendResponse(connectionId, MMOMessageTypes.ResponseUserLogin, responseMessage);
         }
     }
 }
