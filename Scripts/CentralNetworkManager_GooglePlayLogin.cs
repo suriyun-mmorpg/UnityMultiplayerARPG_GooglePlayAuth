@@ -1,4 +1,5 @@
-﻿using LiteNetLib;
+﻿using Google.Protobuf;
+using LiteNetLib.Utils;
 using LiteNetLibManager;
 using MiniJSON;
 using System;
@@ -6,15 +7,43 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace MultiplayerARPG.MMO
 {
     public partial class CentralNetworkManager
     {
+        public const int CUSTOM_REQUEST_GOOGLE_LOGIN = 111;
+
         [DevExtMethods("RegisterServerMessages")]
         protected void RegisterServerMessages_GooglePlayLogin()
         {
             RegisterServerMessage(MMOMessageTypes.RequestGooglePlayLogin, HandleRequestGooglePlayLogin);
+        }
+
+        [DevExtMethods("OnStartServer")]
+        protected void OnStartServer_GoogleLogin()
+        {
+            DatabaseServiceImplement.onCustomRequest -= onCustomRequest_GoogleLogin;
+            DatabaseServiceImplement.onCustomRequest += onCustomRequest_GoogleLogin;
+        }
+
+        public async Task<CustomResp> onCustomRequest_GoogleLogin(int type, ByteString data)
+        {
+            await Task.Yield();
+            string userId = string.Empty;
+            if (type == CUSTOM_REQUEST_GOOGLE_LOGIN)
+            {
+                NetDataReader reader = new NetDataReader(data.ToByteArray());
+                userId = MMOServerInstance.Singleton.DatabaseNetworkManager.Database.GooglePlayLogin(reader.GetString(), reader.GetString());
+            }
+            NetDataWriter writer = new NetDataWriter();
+            writer.Put(userId);
+            return new CustomResp()
+            {
+                Type = 111,
+                Data = ByteString.CopyFrom(writer.Data)
+            };
         }
 
         public uint RequestGooglePlayLogin(string idToken, AckMessageCallback callback)
@@ -26,10 +55,10 @@ namespace MultiplayerARPG.MMO
 
         protected void HandleRequestGooglePlayLogin(LiteNetLibMessageHandler messageHandler)
         {
-            StartCoroutine(HandleRequestGooglePlayLoginRoutine(messageHandler));
+            HandleRequestGooglePlayLoginRoutine(messageHandler);
         }
 
-        IEnumerator HandleRequestGooglePlayLoginRoutine(LiteNetLibMessageHandler messageHandler)
+        async void HandleRequestGooglePlayLoginRoutine(LiteNetLibMessageHandler messageHandler)
         {
             long connectionId = messageHandler.connectionId;
             RequestGooglePlayLoginMessage message = messageHandler.ReadMessage<RequestGooglePlayLoginMessage>();
@@ -43,12 +72,20 @@ namespace MultiplayerARPG.MMO
             Dictionary<string, object> dict = Json.Deserialize(json) as Dictionary<string, object>;
             if (dict.ContainsKey("sub") && dict.ContainsKey("email"))
             {
-                string gId = (string)dict["sub"];
+                string gpgId = (string)dict["sub"];
                 string email = (string)dict["email"];
-                GooglePlayLoginJob job = new GooglePlayLoginJob(Database, gId, email);
-                job.Start();
-                yield return StartCoroutine(job.WaitFor());
-                userId = job.result;
+                // Send request to database server
+                NetDataWriter writer = new NetDataWriter();
+                writer.Put(gpgId);
+                writer.Put(email);
+                CustomResp resp = await DbServiceClient.CustomAsync(new CustomReq()
+                {
+                    Type = CUSTOM_REQUEST_GOOGLE_LOGIN,
+                    Data = ByteString.CopyFrom(writer.Data)
+                });
+                // Receive response from database server
+                NetDataReader reader = new NetDataReader(resp.Data.ToByteArray());
+                userId = reader.GetString();
             }
             // Response clients
             if (string.IsNullOrEmpty(userId))
@@ -69,9 +106,11 @@ namespace MultiplayerARPG.MMO
                 userPeerInfo.accessToken = accessToken = Regex.Replace(Convert.ToBase64String(Guid.NewGuid().ToByteArray()), "[/+=]", "");
                 userPeersByUserId[userId] = userPeerInfo;
                 userPeers[connectionId] = userPeerInfo;
-                UpdateAccessTokenJob updateAccessTokenJob = new UpdateAccessTokenJob(Database, userId, accessToken);
-                updateAccessTokenJob.Start();
-                yield return StartCoroutine(updateAccessTokenJob.WaitFor());
+                await DbServiceClient.UpdateAccessTokenAsync(new UpdateAccessTokenReq()
+                {
+                    UserId = userId,
+                    AccessToken = accessToken
+                });
             }
             ResponseUserLoginMessage responseMessage = new ResponseUserLoginMessage();
             responseMessage.ackId = message.ackId;
