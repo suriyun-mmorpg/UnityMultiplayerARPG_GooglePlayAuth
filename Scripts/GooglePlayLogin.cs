@@ -14,7 +14,7 @@ namespace MultiplayerARPG.MMO
         public UnityEvent onLoginSuccess;
         public UnityEvent onLoginFail;
 
-        private void Awake()
+        private void Start()
         {
 #if UNITY_ANDROID
             var builder = new PlayGamesClientConfiguration.Builder()
