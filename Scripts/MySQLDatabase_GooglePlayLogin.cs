@@ -11,7 +11,7 @@ namespace MultiplayerARPG.MMO
             await ExecuteReader((reader) =>
             {
                 if (reader.Read())
-                    id = reader.GetString("id");
+                    id = reader.GetString(0);
             }, "SELECT id FROM userlogin WHERE username=@username AND password=@password AND authType=@authType LIMIT 1",
                 new MySqlParameter("@username", "g_" + gpgId),
                 new MySqlParameter("@password", GenericUtils.GetMD5(gpgId)),
