@@ -68,7 +68,7 @@ namespace MultiplayerARPG.MMO
 
         public void OnLogin(AckResponseCode responseCode, BaseAckMessage message)
         {
-            ResponseUserLoginMessage castedMessage = (ResponseUserLoginMessage)message;
+            ResponseUserLoginMessage castedMessage = message as ResponseUserLoginMessage;
             switch (responseCode)
             {
                 case AckResponseCode.Error:
