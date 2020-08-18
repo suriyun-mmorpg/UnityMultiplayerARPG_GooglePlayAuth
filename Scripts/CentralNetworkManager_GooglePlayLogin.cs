@@ -1,4 +1,5 @@
-﻿using Google.Protobuf;
+﻿using Cysharp.Threading.Tasks;
+using Google.Protobuf;
 using LiteNetLib.Utils;
 using LiteNetLibManager;
 using MiniJSON;
@@ -54,10 +55,10 @@ namespace MultiplayerARPG.MMO
 
         protected void HandleRequestGooglePlayLogin(LiteNetLibMessageHandler messageHandler)
         {
-            HandleRequestGooglePlayLoginRoutine(messageHandler);
+            HandleRequestGooglePlayLoginRoutine(messageHandler).Forget();
         }
 
-        async void HandleRequestGooglePlayLoginRoutine(LiteNetLibMessageHandler messageHandler)
+        async UniTaskVoid HandleRequestGooglePlayLoginRoutine(LiteNetLibMessageHandler messageHandler)
         {
             long connectionId = messageHandler.connectionId;
             RequestGooglePlayLoginMessage message = messageHandler.ReadMessage<RequestGooglePlayLoginMessage>();

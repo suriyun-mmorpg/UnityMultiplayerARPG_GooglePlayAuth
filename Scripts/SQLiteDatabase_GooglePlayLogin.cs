@@ -1,13 +1,13 @@
-﻿using Mono.Data.Sqlite;
-using System.Threading.Tasks;
+﻿using Cysharp.Threading.Tasks;
+using Mono.Data.Sqlite;
 
 namespace MultiplayerARPG.MMO
 {
     public partial class SQLiteDatabase
     {
-        public override async Task<string> GooglePlayLogin(string gpgId, string email)
+        public override async UniTask<string> GooglePlayLogin(string gpgId, string email)
         {
-            await Task.Yield();
+            await UniTask.Yield();
             string id = string.Empty;
             ExecuteReader((reader) =>
             {

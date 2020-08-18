@@ -1,11 +1,11 @@
-﻿using MySqlConnector;
-using System.Threading.Tasks;
+﻿using Cysharp.Threading.Tasks;
+using MySqlConnector;
 
 namespace MultiplayerARPG.MMO
 {
     public partial class MySQLDatabase
     {
-        public override async Task<string> GooglePlayLogin(string gpgId, string email)
+        public override async UniTask<string> GooglePlayLogin(string gpgId, string email)
         {
             string id = string.Empty;
             await ExecuteReader((reader) =>
