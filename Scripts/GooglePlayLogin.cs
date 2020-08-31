@@ -68,6 +68,13 @@ namespace MultiplayerARPG.MMO
 
         public void OnLogin(AckResponseCode responseCode, BaseAckMessage message)
         {
+            if (responseCode == AckResponseCode.Timeout)
+            {
+                UISceneGlobal.Singleton.ShowMessageDialog(LanguageManager.GetText(UITextKeys.UI_LABEL_ERROR.ToString()), LanguageManager.GetText(UITextKeys.UI_ERROR_CONNECTION_TIMEOUT.ToString()));
+                if (onLoginFail != null)
+                    onLoginFail.Invoke();
+                return;
+            }
             ResponseUserLoginMessage castedMessage = message as ResponseUserLoginMessage;
             switch (responseCode)
             {
@@ -76,18 +83,13 @@ namespace MultiplayerARPG.MMO
                     switch (castedMessage.error)
                     {
                         case ResponseUserLoginMessage.Error.AlreadyLogin:
-                            errorMessage = "User already logged in";
+                            errorMessage = LanguageManager.GetText(UITextKeys.UI_ERROR_ALREADY_LOGGED_IN.ToString());
                             break;
                         case ResponseUserLoginMessage.Error.InvalidUsernameOrPassword:
-                            errorMessage = "Invalid username or password";
+                            errorMessage = LanguageManager.GetText(UITextKeys.UI_ERROR_INVALID_USERNAME_OR_PASSWORD.ToString());
                             break;
                     }
-                    UISceneGlobal.Singleton.ShowMessageDialog("Cannot Login", errorMessage);
-                    if (onLoginFail != null)
-                        onLoginFail.Invoke();
-                    break;
-                case AckResponseCode.Timeout:
-                    UISceneGlobal.Singleton.ShowMessageDialog("Cannot Login", "Connection timeout");
+                    UISceneGlobal.Singleton.ShowMessageDialog(LanguageManager.GetText(UITextKeys.UI_LABEL_ERROR.ToString()), errorMessage);
                     if (onLoginFail != null)
                         onLoginFail.Invoke();
                     break;
