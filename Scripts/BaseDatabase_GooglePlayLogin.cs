@@ -1,4 +1,5 @@
-﻿using Cysharp.Threading.Tasks;
+﻿#if UNITY_STANDALONE && !CLIENT_BUILD
+using Cysharp.Threading.Tasks;
 
 namespace MultiplayerARPG.MMO
 {
@@ -8,3 +9,4 @@ namespace MultiplayerARPG.MMO
         public abstract UniTask<string> GooglePlayLogin(string gpgId, string email);
     }
 }
+#endif

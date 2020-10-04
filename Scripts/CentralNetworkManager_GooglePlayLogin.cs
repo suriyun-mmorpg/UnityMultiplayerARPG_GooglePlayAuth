@@ -1,19 +1,21 @@
-﻿using Cysharp.Threading.Tasks;
+﻿#if UNITY_STANDALONE && !CLIENT_BUILD
+using Cysharp.Threading.Tasks;
 using Google.Protobuf;
 using LiteNetLib.Utils;
-using LiteNetLibManager;
 using MiniJSON;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+#endif
+using LiteNetLibManager;
 
 namespace MultiplayerARPG.MMO
 {
     public partial class CentralNetworkManager
     {
+#if UNITY_STANDALONE && !CLIENT_BUILD
         public const int CUSTOM_REQUEST_GOOGLE_LOGIN = 111;
 
         [DevExtMethods("RegisterServerMessages")]
@@ -44,13 +46,6 @@ namespace MultiplayerARPG.MMO
                 Type = CUSTOM_REQUEST_GOOGLE_LOGIN,
                 Data = ByteString.CopyFrom(writer.Data)
             };
-        }
-
-        public uint RequestGooglePlayLogin(string idToken, AckMessageCallback callback)
-        {
-            RequestGooglePlayLoginMessage message = new RequestGooglePlayLoginMessage();
-            message.idToken = idToken;
-            return ClientSendRequest(MMOMessageTypes.RequestGooglePlayLogin, message, callback);
         }
 
         protected void HandleRequestGooglePlayLogin(LiteNetLibMessageHandler messageHandler)
@@ -119,6 +114,14 @@ namespace MultiplayerARPG.MMO
             responseMessage.userId = userId;
             responseMessage.accessToken = accessToken;
             ServerSendResponse(connectionId, MMOMessageTypes.ResponseUserLogin, responseMessage);
+        }
+#endif
+
+        public uint RequestGooglePlayLogin(string idToken, AckMessageCallback callback)
+        {
+            RequestGooglePlayLoginMessage message = new RequestGooglePlayLoginMessage();
+            message.idToken = idToken;
+            return ClientSendRequest(MMOMessageTypes.RequestGooglePlayLogin, message, callback);
         }
     }
 }
