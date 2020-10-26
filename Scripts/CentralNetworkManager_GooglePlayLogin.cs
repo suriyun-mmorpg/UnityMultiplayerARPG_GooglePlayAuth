@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 #endif
 using LiteNetLibManager;
+using UnityEngine;
 
 namespace MultiplayerARPG.MMO
 {
@@ -17,11 +18,13 @@ namespace MultiplayerARPG.MMO
     {
 #if UNITY_STANDALONE && !CLIENT_BUILD
         public const int CUSTOM_REQUEST_GOOGLE_LOGIN = 111;
+        [Header("Facebook Login")]
+        public ushort googlePlayLoginRequestMsgType = 50;
 
         [DevExtMethods("RegisterServerMessages")]
         protected void RegisterServerMessages_GooglePlayLogin()
         {
-            RegisterServerMessage(MMOMessageTypes.RequestGooglePlayLogin, HandleRequestGooglePlayLogin);
+            RegisterServerMessage(googlePlayLoginRequestMsgType, HandleRequestGooglePlayLogin);
         }
 
         [DevExtMethods("OnStartServer")]
@@ -107,21 +110,22 @@ namespace MultiplayerARPG.MMO
                     AccessToken = accessToken
                 });
             }
-            ResponseUserLoginMessage responseMessage = new ResponseUserLoginMessage();
-            responseMessage.ackId = message.ackId;
-            responseMessage.responseCode = error == ResponseUserLoginMessage.Error.None ? AckResponseCode.Success : AckResponseCode.Error;
-            responseMessage.error = error;
-            responseMessage.userId = userId;
-            responseMessage.accessToken = accessToken;
-            ServerSendResponse(connectionId, MMOMessageTypes.ResponseUserLogin, responseMessage);
+            ServerSendResponse(connectionId, new ResponseUserLoginMessage()
+            {
+                ackId = message.ackId,
+                responseCode = error == ResponseUserLoginMessage.Error.None ? AckResponseCode.Success : AckResponseCode.Error,
+                error = error,
+                userId = userId,
+                accessToken = accessToken,
+            });
         }
 #endif
 
-        public uint RequestGooglePlayLogin(string idToken, AckMessageCallback callback)
+        public uint RequestGooglePlayLogin(string idToken, AckMessageCallback<ResponseUserLoginMessage> callback)
         {
             RequestGooglePlayLoginMessage message = new RequestGooglePlayLoginMessage();
             message.idToken = idToken;
-            return ClientSendRequest(MMOMessageTypes.RequestGooglePlayLogin, message, callback);
+            return ClientSendRequest(googlePlayLoginRequestMsgType, message, callback);
         }
     }
 }
