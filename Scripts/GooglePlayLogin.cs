@@ -4,6 +4,7 @@ using UnityEngine.Events;
 using LiteNetLibManager;
 using GooglePlayGames;
 using GooglePlayGames.BasicApi;
+using LiteNetLib.Utils;
 
 namespace MultiplayerARPG.MMO
 {
@@ -65,20 +66,21 @@ namespace MultiplayerARPG.MMO
             MMOClientInstance.Singleton.RequestGooglePlayLogin(idToken, OnLogin);
         }
 
-        public void OnLogin(ResponseUserLoginMessage message)
+        public void OnLogin(ResponseHandlerData responseHandler, AckResponseCode responseCode, INetSerializable response)
         {
-            if (message.responseCode == AckResponseCode.Timeout)
+            if (responseCode == AckResponseCode.Timeout)
             {
                 UISceneGlobal.Singleton.ShowMessageDialog(LanguageManager.GetText(UITextKeys.UI_LABEL_ERROR.ToString()), LanguageManager.GetText(UITextKeys.UI_ERROR_CONNECTION_TIMEOUT.ToString()));
                 if (onLoginFail != null)
                     onLoginFail.Invoke();
                 return;
             }
-            switch (message.responseCode)
+            ResponseUserLoginMessage castedResponse = response as ResponseUserLoginMessage;
+            switch (responseCode)
             {
                 case AckResponseCode.Error:
                     string errorMessage = string.Empty;
-                    switch (message.error)
+                    switch (castedResponse.error)
                     {
                         case ResponseUserLoginMessage.Error.AlreadyLogin:
                             errorMessage = LanguageManager.GetText(UITextKeys.UI_ERROR_ALREADY_LOGGED_IN.ToString());

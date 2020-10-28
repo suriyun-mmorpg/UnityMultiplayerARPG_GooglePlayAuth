@@ -1,20 +1,17 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using LiteNetLibManager;
-using LiteNetLib.Utils;
+﻿using LiteNetLib.Utils;
 
 namespace MultiplayerARPG.MMO
 {
-    public class RequestGooglePlayLoginMessage : BaseAckMessage
+    public class RequestGooglePlayLoginMessage : INetSerializable
     {
         public string idToken;
 
-        public override void DeserializeData(NetDataReader reader)
+        public void Deserialize(NetDataReader reader)
         {
             idToken = reader.GetString();
         }
 
-        public override void SerializeData(NetDataWriter writer)
+        public void Serialize(NetDataWriter writer)
         {
             writer.Put(idToken);
         }

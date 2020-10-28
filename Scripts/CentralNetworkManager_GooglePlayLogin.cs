@@ -24,7 +24,7 @@ namespace MultiplayerARPG.MMO
         [DevExtMethods("RegisterServerMessages")]
         protected void RegisterServerMessages_GooglePlayLogin()
         {
-            RegisterServerMessage(googlePlayLoginRequestMsgType, HandleRequestGooglePlayLogin);
+            RegisterServerRequest<RequestGooglePlayLoginMessage, ResponseUserLoginMessage>(googlePlayLoginRequestMsgType, HandleRequestGooglePlayLogin);
         }
 
         [DevExtMethods("OnStartServer")]
@@ -51,20 +51,15 @@ namespace MultiplayerARPG.MMO
             };
         }
 
-        protected void HandleRequestGooglePlayLogin(LiteNetLibMessageHandler messageHandler)
+        protected async UniTaskVoid HandleRequestGooglePlayLogin(
+            RequestHandlerData requestHandler, RequestGooglePlayLoginMessage request,
+            RequestProceedResultDelegate<ResponseUserLoginMessage> result)
         {
-            HandleRequestGooglePlayLoginRoutine(messageHandler).Forget();
-        }
-
-        async UniTaskVoid HandleRequestGooglePlayLoginRoutine(LiteNetLibMessageHandler messageHandler)
-        {
-            long connectionId = messageHandler.connectionId;
-            RequestGooglePlayLoginMessage message = messageHandler.ReadMessage<RequestGooglePlayLoginMessage>();
             ResponseUserLoginMessage.Error error = ResponseUserLoginMessage.Error.None;
             string userId = string.Empty;
             string accessToken = string.Empty;
             // Validate by google api
-            string url = "https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=" + message.idToken;
+            string url = "https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=" + request.idToken;
             WebClient webClient = new WebClient();
             string json = webClient.DownloadString(url);
             Dictionary<string, object> dict = Json.Deserialize(json) as Dictionary<string, object>;
@@ -82,8 +77,8 @@ namespace MultiplayerARPG.MMO
                     Data = ByteString.CopyFrom(writer.Data)
                 });
                 // Receive response from database server
-                NetDataReader reader = new NetDataReader(resp.Data.ToByteArray());
-                userId = reader.GetString();
+                NetDataReader dbReader = new NetDataReader(resp.Data.ToByteArray());
+                userId = dbReader.GetString();
             }
             // Response clients
             if (string.IsNullOrEmpty(userId))
@@ -99,33 +94,35 @@ namespace MultiplayerARPG.MMO
             else
             {
                 CentralUserPeerInfo userPeerInfo = new CentralUserPeerInfo();
-                userPeerInfo.connectionId = connectionId;
+                userPeerInfo.connectionId = requestHandler.ConnectionId;
                 userPeerInfo.userId = userId;
                 userPeerInfo.accessToken = accessToken = Regex.Replace(Convert.ToBase64String(Guid.NewGuid().ToByteArray()), "[/+=]", "");
                 userPeersByUserId[userId] = userPeerInfo;
-                userPeers[connectionId] = userPeerInfo;
+                userPeers[requestHandler.ConnectionId] = userPeerInfo;
                 await DbServiceClient.UpdateAccessTokenAsync(new UpdateAccessTokenReq()
                 {
                     UserId = userId,
                     AccessToken = accessToken
                 });
             }
-            ServerSendResponse(connectionId, new ResponseUserLoginMessage()
-            {
-                ackId = message.ackId,
-                responseCode = error == ResponseUserLoginMessage.Error.None ? AckResponseCode.Success : AckResponseCode.Error,
-                error = error,
-                userId = userId,
-                accessToken = accessToken,
-            });
+            // Response
+            result.Invoke(
+                error == ResponseUserLoginMessage.Error.None ? AckResponseCode.Success : AckResponseCode.Error,
+                new ResponseUserLoginMessage()
+                {
+                    error = error,
+                    userId = userId,
+                    accessToken = accessToken,
+                });
         }
 #endif
 
-        public uint RequestGooglePlayLogin(string idToken, AckMessageCallback<ResponseUserLoginMessage> callback)
+        public bool RequestGooglePlayLogin(string idToken, ResponseDelegate extraResponseCallback)
         {
-            RequestGooglePlayLoginMessage message = new RequestGooglePlayLoginMessage();
-            message.idToken = idToken;
-            return ClientSendRequest(googlePlayLoginRequestMsgType, message, callback);
+            return ClientSendRequest(googlePlayLoginRequestMsgType, new RequestGooglePlayLoginMessage()
+            {
+                idToken = idToken,
+            }, responseDelegate: extraResponseCallback);
         }
     }
 }

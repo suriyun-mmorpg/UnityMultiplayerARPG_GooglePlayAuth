@@ -4,9 +4,9 @@ namespace MultiplayerARPG.MMO
 {
     public partial class MMOClientInstance
     {
-        public void RequestGooglePlayLogin(string idToken, AckMessageCallback<ResponseUserLoginMessage> callback)
+        public void RequestGooglePlayLogin(string idToken, ResponseDelegate callback)
         {
-            centralNetworkManager.RequestGooglePlayLogin(idToken, (messageData) => OnRequestUserLogin(messageData, callback));
+            centralNetworkManager.RequestGooglePlayLogin(idToken, (responseHandler, responseCode, response) => OnRequestUserLogin(responseHandler, responseCode, response, callback));
         }
     }
 }
