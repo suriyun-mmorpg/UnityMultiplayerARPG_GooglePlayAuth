@@ -19,12 +19,12 @@ namespace MultiplayerARPG.MMO
 #if UNITY_STANDALONE && !CLIENT_BUILD
         public const int CUSTOM_REQUEST_GOOGLE_LOGIN = 111;
         [Header("Facebook Login")]
-        public ushort googlePlayLoginRequestMsgType = 50;
+        public ushort googlePlayLoginRequestType = 211;
 
         [DevExtMethods("RegisterServerMessages")]
         protected void RegisterServerMessages_GooglePlayLogin()
         {
-            RegisterServerRequest<RequestGooglePlayLoginMessage, ResponseUserLoginMessage>(googlePlayLoginRequestMsgType, HandleRequestGooglePlayLogin);
+            RegisterServerRequest<RequestGooglePlayLoginMessage, ResponseUserLoginMessage>(googlePlayLoginRequestType, HandleRequestGooglePlayLogin);
         }
 
         [DevExtMethods("OnStartServer")]
@@ -119,7 +119,7 @@ namespace MultiplayerARPG.MMO
 
         public bool RequestGooglePlayLogin(string idToken, ResponseDelegate extraResponseCallback)
         {
-            return ClientSendRequest(googlePlayLoginRequestMsgType, new RequestGooglePlayLoginMessage()
+            return ClientSendRequest(googlePlayLoginRequestType, new RequestGooglePlayLoginMessage()
             {
                 idToken = idToken,
             }, responseDelegate: extraResponseCallback);
