@@ -16,11 +16,12 @@ namespace MultiplayerARPG.MMO
 {
     public partial class CentralNetworkManager
     {
-        [Header("Facebook Login")]
-        public ushort googlePlayLoginRequestType = 211;
-#if UNITY_STANDALONE && !CLIENT_BUILD
         public const int CUSTOM_REQUEST_GOOGLE_LOGIN = 111;
 
+        [Header("Facebook Login")]
+        public ushort googlePlayLoginRequestType = 211;
+
+#if UNITY_STANDALONE && !CLIENT_BUILD
         [DevExtMethods("RegisterServerMessages")]
         protected void RegisterServerMessages_GooglePlayLogin()
         {
