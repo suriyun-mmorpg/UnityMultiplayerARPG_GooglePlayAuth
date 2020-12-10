@@ -118,12 +118,12 @@ namespace MultiplayerARPG.MMO
         }
 #endif
 
-        public bool RequestGooglePlayLogin(string idToken, ResponseDelegate extraResponseCallback)
+        public bool RequestGooglePlayLogin(string idToken, ResponseDelegate callback)
         {
             return ClientSendRequest(googlePlayLoginRequestType, new RequestGooglePlayLoginMessage()
             {
                 idToken = idToken,
-            }, responseDelegate: extraResponseCallback);
+            }, responseDelegate: callback);
         }
     }
 }
