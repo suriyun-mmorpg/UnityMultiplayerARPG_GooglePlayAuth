@@ -118,7 +118,7 @@ namespace MultiplayerARPG.MMO
         }
 #endif
 
-        public bool RequestGooglePlayLogin(string idToken, ResponseDelegate callback)
+        public bool RequestGooglePlayLogin(string idToken, ResponseDelegate<ResponseUserLoginMessage> callback)
         {
             return ClientSendRequest(googlePlayLoginRequestType, new RequestGooglePlayLoginMessage()
             {

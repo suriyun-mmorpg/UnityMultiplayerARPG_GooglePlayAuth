@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Events;
 using LiteNetLibManager;
 using GooglePlayGames;
 using GooglePlayGames.BasicApi;
-using LiteNetLib.Utils;
+using Cysharp.Threading.Tasks;
 
 namespace MultiplayerARPG.MMO
 {
@@ -66,8 +65,9 @@ namespace MultiplayerARPG.MMO
             MMOClientInstance.Singleton.RequestGooglePlayLogin(idToken, OnLogin);
         }
 
-        public void OnLogin(ResponseHandlerData responseHandler, AckResponseCode responseCode, INetSerializable response)
+        public async UniTaskVoid OnLogin(ResponseHandlerData responseHandler, AckResponseCode responseCode, ResponseUserLoginMessage response)
         {
+            await UniTask.Yield();
             if (responseCode == AckResponseCode.Timeout)
             {
                 UISceneGlobal.Singleton.ShowMessageDialog(LanguageManager.GetText(UITextKeys.UI_LABEL_ERROR.ToString()), LanguageManager.GetText(UITextKeys.UI_ERROR_CONNECTION_TIMEOUT.ToString()));
