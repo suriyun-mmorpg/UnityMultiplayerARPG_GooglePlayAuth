@@ -68,36 +68,27 @@ namespace MultiplayerARPG.MMO
         public async UniTaskVoid OnLogin(ResponseHandlerData responseHandler, AckResponseCode responseCode, ResponseUserLoginMessage response)
         {
             await UniTask.Yield();
-            if (responseCode == AckResponseCode.Timeout)
+            if (responseCode.ShowUnhandledResponseMessageDialog(() =>
             {
-                UISceneGlobal.Singleton.ShowMessageDialog(LanguageManager.GetText(UITextKeys.UI_LABEL_ERROR.ToString()), LanguageManager.GetText(UITextKeys.UI_ERROR_CONNECTION_TIMEOUT.ToString()));
+                string errorMessage = string.Empty;
+                switch (response.error)
+                {
+                    case ResponseUserLoginMessage.Error.AlreadyLogin:
+                        errorMessage = LanguageManager.GetText(UITextKeys.UI_ERROR_ALREADY_LOGGED_IN.ToString());
+                        break;
+                    case ResponseUserLoginMessage.Error.InvalidUsernameOrPassword:
+                        errorMessage = LanguageManager.GetText(UITextKeys.UI_ERROR_INVALID_USERNAME_OR_PASSWORD.ToString());
+                        break;
+                }
+                UISceneGlobal.Singleton.ShowMessageDialog(LanguageManager.GetText(UITextKeys.UI_LABEL_ERROR.ToString()), errorMessage);
+            }))
+            {
                 if (onLoginFail != null)
                     onLoginFail.Invoke();
                 return;
             }
-            ResponseUserLoginMessage castedResponse = response as ResponseUserLoginMessage;
-            switch (responseCode)
-            {
-                case AckResponseCode.Error:
-                    string errorMessage = string.Empty;
-                    switch (castedResponse.error)
-                    {
-                        case ResponseUserLoginMessage.Error.AlreadyLogin:
-                            errorMessage = LanguageManager.GetText(UITextKeys.UI_ERROR_ALREADY_LOGGED_IN.ToString());
-                            break;
-                        case ResponseUserLoginMessage.Error.InvalidUsernameOrPassword:
-                            errorMessage = LanguageManager.GetText(UITextKeys.UI_ERROR_INVALID_USERNAME_OR_PASSWORD.ToString());
-                            break;
-                    }
-                    UISceneGlobal.Singleton.ShowMessageDialog(LanguageManager.GetText(UITextKeys.UI_LABEL_ERROR.ToString()), errorMessage);
-                    if (onLoginFail != null)
-                        onLoginFail.Invoke();
-                    break;
-                default:
-                    if (onLoginSuccess != null)
-                        onLoginSuccess.Invoke();
-                    break;
-            }
+            if (onLoginSuccess != null)
+                onLoginSuccess.Invoke();
         }
     }
 }
