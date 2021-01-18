@@ -68,20 +68,7 @@ namespace MultiplayerARPG.MMO
         public async UniTaskVoid OnLogin(ResponseHandlerData responseHandler, AckResponseCode responseCode, ResponseUserLoginMessage response)
         {
             await UniTask.Yield();
-            if (responseCode.ShowUnhandledResponseMessageDialog(() =>
-            {
-                string errorMessage = string.Empty;
-                switch (response.error)
-                {
-                    case ResponseUserLoginMessage.Error.AlreadyLogin:
-                        errorMessage = LanguageManager.GetText(UITextKeys.UI_ERROR_ALREADY_LOGGED_IN.ToString());
-                        break;
-                    case ResponseUserLoginMessage.Error.InvalidUsernameOrPassword:
-                        errorMessage = LanguageManager.GetText(UITextKeys.UI_ERROR_INVALID_USERNAME_OR_PASSWORD.ToString());
-                        break;
-                }
-                UISceneGlobal.Singleton.ShowMessageDialog(LanguageManager.GetText(UITextKeys.UI_LABEL_ERROR.ToString()), errorMessage);
-            }))
+            if (responseCode.ShowUnhandledResponseMessageDialog(response.error))
             {
                 if (onLoginFail != null)
                     onLoginFail.Invoke();
