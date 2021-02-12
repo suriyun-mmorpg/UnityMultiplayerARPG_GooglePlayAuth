@@ -65,9 +65,8 @@ namespace MultiplayerARPG.MMO
             MMOClientInstance.Singleton.RequestGooglePlayLogin(idToken, OnLogin);
         }
 
-        public async UniTaskVoid OnLogin(ResponseHandlerData responseHandler, AckResponseCode responseCode, ResponseUserLoginMessage response)
+        public void OnLogin(ResponseHandlerData responseHandler, AckResponseCode responseCode, ResponseUserLoginMessage response)
         {
-            await UniTask.Yield();
             if (responseCode.ShowUnhandledResponseMessageDialog(response.message))
             {
                 if (onLoginFail != null)
