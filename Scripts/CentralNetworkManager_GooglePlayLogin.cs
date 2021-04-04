@@ -1,13 +1,10 @@
 ﻿#if UNITY_STANDALONE && !CLIENT_BUILD
 using Cysharp.Threading.Tasks;
-using Google.Protobuf;
-using LiteNetLib.Utils;
 using MiniJSON;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 #endif
 using LiteNetLibManager;
 using UnityEngine;
@@ -16,9 +13,7 @@ namespace MultiplayerARPG.MMO
 {
     public partial class CentralNetworkManager
     {
-        public const int CUSTOM_REQUEST_GOOGLE_LOGIN = 111;
-
-        [Header("Facebook Login")]
+        [Header("Google Play Login")]
         public ushort googlePlayLoginRequestType = 211;
 
 #if UNITY_STANDALONE && !CLIENT_BUILD
@@ -26,30 +21,6 @@ namespace MultiplayerARPG.MMO
         protected void RegisterServerMessages_GooglePlayLogin()
         {
             RegisterRequestToServer<RequestGooglePlayLoginMessage, ResponseUserLoginMessage>(googlePlayLoginRequestType, HandleRequestGooglePlayLogin);
-        }
-
-        [DevExtMethods("OnStartServer")]
-        protected void OnStartServer_GoogleLogin()
-        {
-            DatabaseServiceImplement.onCustomRequest -= onCustomRequest_GoogleLogin;
-            DatabaseServiceImplement.onCustomRequest += onCustomRequest_GoogleLogin;
-        }
-
-        public async Task<CustomResp> onCustomRequest_GoogleLogin(int type, ByteString data)
-        {
-            string userId = string.Empty;
-            if (type == CUSTOM_REQUEST_GOOGLE_LOGIN)
-            {
-                NetDataReader reader = new NetDataReader(data.ToByteArray());
-                userId = await MMOServerInstance.Singleton.DatabaseNetworkManager.Database.GooglePlayLogin(reader.GetString(), reader.GetString());
-            }
-            NetDataWriter writer = new NetDataWriter();
-            writer.Put(userId);
-            return new CustomResp()
-            {
-                Type = CUSTOM_REQUEST_GOOGLE_LOGIN,
-                Data = ByteString.CopyFrom(writer.Data)
-            };
         }
 
         protected async UniTaskVoid HandleRequestGooglePlayLogin(
@@ -66,20 +37,13 @@ namespace MultiplayerARPG.MMO
             Dictionary<string, object> dict = Json.Deserialize(json) as Dictionary<string, object>;
             if (dict.ContainsKey("sub") && dict.ContainsKey("email"))
             {
-                string gpgId = (string)dict["sub"];
-                string email = (string)dict["email"];
                 // Send request to database server
-                NetDataWriter writer = new NetDataWriter();
-                writer.Put(gpgId);
-                writer.Put(email);
-                CustomResp resp = await DbServiceClient.CustomAsync(new CustomReq()
+                DbGooglePlayLoginResp resp = await DbServiceClient.RequestDbGooglePlayLogin(new DbGooglePlayLoginReq()
                 {
-                    Type = CUSTOM_REQUEST_GOOGLE_LOGIN,
-                    Data = ByteString.CopyFrom(writer.Data)
+                    id = (string)dict["sub"],
+                    email = (string)dict["email"],
                 });
-                // Receive response from database server
-                NetDataReader dbReader = new NetDataReader(resp.Data.ToByteArray());
-                userId = dbReader.GetString();
+                userId = resp.userId;
             }
             // Response clients
             if (string.IsNullOrEmpty(userId))
