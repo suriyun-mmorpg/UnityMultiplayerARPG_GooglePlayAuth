@@ -13,7 +13,7 @@ namespace MultiplayerARPG.MMO
             RegisterRequestToServer<DbGooglePlayLoginReq, DbGooglePlayLoginResp>(CUSTOM_REQUEST_GOOGLE_LOGIN, DbGooglePlayLogin);
         }
 
-        protected async UniTask<AsyncResponseData<DbGooglePlayLoginResp>> RequestDbGooglePlayLogin(DbGooglePlayLoginReq request)
+        public async UniTask<AsyncResponseData<DbGooglePlayLoginResp>> RequestDbGooglePlayLogin(DbGooglePlayLoginReq request)
         {
             return await Client.SendRequestAsync<DbGooglePlayLoginReq, DbGooglePlayLoginResp>(CUSTOM_REQUEST_GOOGLE_LOGIN, request);
         }

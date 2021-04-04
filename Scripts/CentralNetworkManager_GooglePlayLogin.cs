@@ -38,12 +38,15 @@ namespace MultiplayerARPG.MMO
             if (dict.ContainsKey("sub") && dict.ContainsKey("email"))
             {
                 // Send request to database server
-                DbGooglePlayLoginResp resp = await DbServiceClient.RequestDbGooglePlayLogin(new DbGooglePlayLoginReq()
+                AsyncResponseData<DbGooglePlayLoginResp> resp = await DbServiceClient.RequestDbGooglePlayLogin(new DbGooglePlayLoginReq()
                 {
                     id = (string)dict["sub"],
                     email = (string)dict["email"],
                 });
-                userId = resp.userId;
+                if (resp.ResponseCode == AckResponseCode.Success)
+                {
+                    userId = resp.Response.userId;
+                }
             }
             // Response clients
             if (string.IsNullOrEmpty(userId))
