@@ -6,7 +6,7 @@ namespace MultiplayerARPG.MMO
     {
         public void RequestGooglePlayLogin(string idToken, ResponseDelegate<ResponseUserLoginMessage> callback)
         {
-            centralNetworkManager.RequestGooglePlayLogin(idToken, (responseHandler, responseCode, response) => OnRequestUserLogin(responseHandler, responseCode, response, callback));
+            centralNetworkManager.RequestGooglePlayLogin(idToken, (responseHandler, responseCode, response) => OnRequestUserLogin(responseHandler, responseCode, response, callback).Forget());
         }
     }
 }
