@@ -13,9 +13,9 @@ namespace MultiplayerARPG.MMO
             RegisterRequestToServer<DbGooglePlayLoginReq, DbGooglePlayLoginResp>(CUSTOM_REQUEST_GOOGLE_LOGIN, DbGooglePlayLogin);
         }
 
-        public async UniTask<AsyncResponseData<DbGooglePlayLoginResp>> RequestDbGooglePlayLogin(DbGooglePlayLoginReq request)
+        public UniTask<AsyncResponseData<DbGooglePlayLoginResp>> RequestDbGooglePlayLogin(DbGooglePlayLoginReq request)
         {
-            return await Client.SendRequestAsync<DbGooglePlayLoginReq, DbGooglePlayLoginResp>(CUSTOM_REQUEST_GOOGLE_LOGIN, request);
+            return Client.SendRequestAsync<DbGooglePlayLoginReq, DbGooglePlayLoginResp>(CUSTOM_REQUEST_GOOGLE_LOGIN, request);
         }
 
         protected async UniTaskVoid DbGooglePlayLogin(RequestHandlerData requestHandler, DbGooglePlayLoginReq request, RequestProceedResultDelegate<DbGooglePlayLoginResp> result)
@@ -23,7 +23,7 @@ namespace MultiplayerARPG.MMO
 #if UNITY_STANDALONE && !CLIENT_BUILD
             result.Invoke(AckResponseCode.Success, new DbGooglePlayLoginResp()
             {
-                userId = await MMOServerInstance.Singleton.DatabaseNetworkManager.Database.GooglePlayLogin(request.id, request.email),
+                userId = await Database.GooglePlayLogin(request.id, request.email),
             });
 #endif
         }
