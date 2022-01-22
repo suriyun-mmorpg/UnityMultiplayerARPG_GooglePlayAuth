@@ -27,7 +27,6 @@ namespace MultiplayerARPG.MMO
             RequestHandlerData requestHandler, RequestGooglePlayLoginMessage request,
             RequestProceedResultDelegate<ResponseUserLoginMessage> result)
         {
-            UITextKeys message = UITextKeys.NONE;
             string userId = string.Empty;
             string accessToken = string.Empty;
             long unbanTime = 0;
@@ -52,47 +51,56 @@ namespace MultiplayerARPG.MMO
             // Response clients
             if (string.IsNullOrEmpty(userId))
             {
-                message = UITextKeys.UI_ERROR_INVALID_USERNAME_OR_PASSWORD;
-                userId = string.Empty;
-            }
-            else if (userPeersByUserId.ContainsKey(userId) || MapContainsUser(userId))
-            {
-                message = UITextKeys.UI_ERROR_ALREADY_LOGGED_IN;
-                userId = string.Empty;
-            }
-            else
-            {
-                GetUserUnbanTimeResp resp = await DbServiceClient.GetUserUnbanTimeAsync(new GetUserUnbanTimeReq()
+                result.Invoke(AckResponseCode.Error, new ResponseUserLoginMessage()
                 {
-                    UserId = userId
+                    message = UITextKeys.UI_ERROR_INVALID_USERNAME_OR_PASSWORD,
                 });
-                unbanTime = resp.UnbanTime;
-                if (unbanTime > DateTimeOffset.UtcNow.ToUnixTimeSeconds())
-                {
-                    message = UITextKeys.UI_ERROR_USER_BANNED;
-                    userId = string.Empty;
-                }
-                else
-                {
-                    CentralUserPeerInfo userPeerInfo = new CentralUserPeerInfo();
-                    userPeerInfo.connectionId = requestHandler.ConnectionId;
-                    userPeerInfo.userId = userId;
-                    userPeerInfo.accessToken = accessToken = Regex.Replace(Convert.ToBase64String(Guid.NewGuid().ToByteArray()), "[/+=]", "");
-                    userPeersByUserId[userId] = userPeerInfo;
-                    userPeers[requestHandler.ConnectionId] = userPeerInfo;
-                    await DbServiceClient.UpdateAccessTokenAsync(new UpdateAccessTokenReq()
-                    {
-                        UserId = userId,
-                        AccessToken = accessToken
-                    });
-                }
+                return;
             }
+            if (userPeersByUserId.ContainsKey(userId) || MapContainsUser(userId))
+            {
+                result.Invoke(AckResponseCode.Error, new ResponseUserLoginMessage()
+                {
+                    message = UITextKeys.UI_ERROR_ALREADY_LOGGED_IN,
+                });
+                return;
+            }
+            AsyncResponseData<GetUserUnbanTimeResp> unbanTimeResp = await DbServiceClient.GetUserUnbanTimeAsync(new GetUserUnbanTimeReq()
+            {
+                UserId = userId
+            });
+            if (unbanTimeResp.ResponseCode != AckResponseCode.Success)
+            {
+                result.Invoke(AckResponseCode.Error, new ResponseUserLoginMessage()
+                {
+                    message = UITextKeys.UI_ERROR_INTERNAL_SERVER_ERROR,
+                });
+                return;
+            }
+            unbanTime = unbanTimeResp.Response.UnbanTime;
+            if (unbanTime > DateTimeOffset.UtcNow.ToUnixTimeSeconds())
+            {
+                result.Invoke(AckResponseCode.Error, new ResponseUserLoginMessage()
+                {
+                    message = UITextKeys.UI_ERROR_USER_BANNED,
+                });
+                return;
+            }
+            CentralUserPeerInfo userPeerInfo = new CentralUserPeerInfo();
+            userPeerInfo.connectionId = requestHandler.ConnectionId;
+            userPeerInfo.userId = userId;
+            userPeerInfo.accessToken = accessToken = Regex.Replace(Convert.ToBase64String(Guid.NewGuid().ToByteArray()), "[/+=]", "");
+            userPeersByUserId[userId] = userPeerInfo;
+            userPeers[requestHandler.ConnectionId] = userPeerInfo;
+            await DbServiceClient.UpdateAccessTokenAsync(new UpdateAccessTokenReq()
+            {
+                UserId = userId,
+                AccessToken = accessToken
+            });
             // Response
-            result.Invoke(
-                message == UITextKeys.NONE ? AckResponseCode.Success : AckResponseCode.Error,
+            result.Invoke(AckResponseCode.Success,
                 new ResponseUserLoginMessage()
                 {
-                    message = message,
                     userId = userId,
                     accessToken = accessToken,
                     unbanTime = unbanTime,
