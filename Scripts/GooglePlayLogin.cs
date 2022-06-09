@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 using LiteNetLibManager;
+#if UNITY_ANDROID
 using GooglePlayGames;
 using GooglePlayGames.BasicApi;
+#endif
 
 namespace MultiplayerARPG.MMO
 {
