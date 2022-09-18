@@ -1,4 +1,4 @@
-﻿#if UNITY_STANDALONE && !CLIENT_BUILD
+﻿#if UNITY_SERVER || !MMO_BUILD
 using Cysharp.Threading.Tasks;
 using MiniJSON;
 using System;
@@ -16,7 +16,7 @@ namespace MultiplayerARPG.MMO
         [Header("Google Play Login")]
         public ushort googlePlayLoginRequestType = 211;
 
-#if UNITY_STANDALONE && !CLIENT_BUILD
+#if UNITY_SERVER || !MMO_BUILD
         [DevExtMethods("RegisterServerMessages")]
         protected void RegisterServerMessages_GooglePlayLogin()
         {
