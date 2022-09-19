@@ -15,7 +15,6 @@ namespace MultiplayerARPG.MMO
         public bool debugLogEnabled;
         public UnityEvent onLoginSuccess;
         public UnityEvent onLoginFail;
-        public string webClientId;
 
         private void Start()
         {
@@ -27,7 +26,7 @@ namespace MultiplayerARPG.MMO
         public async void OnClickGooglePlayLogin()
         {
 #if UNITY_ANDROID
-            GoogleSignIn.Configuration.WebClientId = webClientId;
+            GoogleSignIn.Configuration.WebClientId = MMOClientInstance.Singleton.googleWebClientId;
             GoogleSignIn.Configuration.RequestEmail = true;
             GoogleSignIn.Configuration.RequestAuthCode = true;
             GoogleSignIn.Configuration.RequestIdToken = true;
