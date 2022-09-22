@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR || UNITY_SERVER || !MMO_BUILD
+﻿#if UNITY_EDITOR || UNITY_SERVER
 using Cysharp.Threading.Tasks;
 using MySqlConnector;
 
