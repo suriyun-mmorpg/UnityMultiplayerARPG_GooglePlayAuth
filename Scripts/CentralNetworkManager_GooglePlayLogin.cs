@@ -61,8 +61,8 @@ namespace MultiplayerARPG.MMO
             {
                 // Kick the user from game
                 if (userPeersByUserId.ContainsKey(userId))
-                    ServerTransport.ServerDisconnect(userPeersByUserId[userId].connectionId);
-                ClusterServer.KickUser(userId);
+                    KickClient(userPeersByUserId[userId].connectionId, UITextKeys.UI_ERROR_ACCOUNT_LOGGED_IN_BY_OTHER);
+                ClusterServer.KickUser(userId, UITextKeys.UI_ERROR_ACCOUNT_LOGGED_IN_BY_OTHER);
                 RemoveUserPeerByUserId(userId, out _);
                 result.Invoke(AckResponseCode.Error, new ResponseUserLoginMessage()
                 {
