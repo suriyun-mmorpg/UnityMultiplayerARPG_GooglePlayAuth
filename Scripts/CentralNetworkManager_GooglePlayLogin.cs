@@ -59,6 +59,11 @@ namespace MultiplayerARPG.MMO
             }
             if (userPeersByUserId.ContainsKey(userId) || MapContainsUser(userId))
             {
+                // Kick the user from game
+                if (userPeersByUserId.ContainsKey(userId))
+                    ServerTransport.ServerDisconnect(userPeersByUserId[userId].connectionId);
+                ClusterServer.KickUser(userId);
+                RemoveUserPeerByUserId(userId, out _);
                 result.Invoke(AckResponseCode.Error, new ResponseUserLoginMessage()
                 {
                     message = UITextKeys.UI_ERROR_ALREADY_LOGGED_IN,
