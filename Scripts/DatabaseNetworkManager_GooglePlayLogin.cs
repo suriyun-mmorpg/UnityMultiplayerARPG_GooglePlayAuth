@@ -21,7 +21,7 @@ namespace MultiplayerARPG.MMO
         protected async UniTaskVoid DbGooglePlayLogin(RequestHandlerData requestHandler, DbGooglePlayLoginReq request, RequestProceedResultDelegate<DbGooglePlayLoginResp> result)
         {
 #if (UNITY_EDITOR || UNITY_SERVER) && UNITY_STANDALONE
-            result.Invoke(AckResponseCode.Success, new DbGooglePlayLoginResp()
+            result.InvokeSuccess(new DbGooglePlayLoginResp()
             {
                 userId = await Database.GooglePlayLogin(request.id, request.email),
             });

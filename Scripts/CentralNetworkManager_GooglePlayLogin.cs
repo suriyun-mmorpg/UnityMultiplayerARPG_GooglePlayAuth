@@ -51,7 +51,7 @@ namespace MultiplayerARPG.MMO
             // Response clients
             if (string.IsNullOrEmpty(userId))
             {
-                result.Invoke(AckResponseCode.Error, new ResponseUserLoginMessage()
+                result.InvokeError(new ResponseUserLoginMessage()
                 {
                     message = UITextKeys.UI_ERROR_INVALID_USERNAME_OR_PASSWORD,
                 });
@@ -64,7 +64,7 @@ namespace MultiplayerARPG.MMO
                     KickClient(userPeersByUserId[userId].connectionId, UITextKeys.UI_ERROR_ACCOUNT_LOGGED_IN_BY_OTHER);
                 ClusterServer.KickUser(userId, UITextKeys.UI_ERROR_ACCOUNT_LOGGED_IN_BY_OTHER);
                 RemoveUserPeerByUserId(userId, out _);
-                result.Invoke(AckResponseCode.Error, new ResponseUserLoginMessage()
+                result.InvokeError(new ResponseUserLoginMessage()
                 {
                     message = UITextKeys.UI_ERROR_ALREADY_LOGGED_IN,
                 });
@@ -76,7 +76,7 @@ namespace MultiplayerARPG.MMO
             });
             if (unbanTimeResp.ResponseCode != AckResponseCode.Success)
             {
-                result.Invoke(AckResponseCode.Error, new ResponseUserLoginMessage()
+                result.InvokeError(new ResponseUserLoginMessage()
                 {
                     message = UITextKeys.UI_ERROR_INTERNAL_SERVER_ERROR,
                 });
@@ -85,7 +85,7 @@ namespace MultiplayerARPG.MMO
             unbanTime = unbanTimeResp.Response.UnbanTime;
             if (unbanTime > DateTimeOffset.UtcNow.ToUnixTimeSeconds())
             {
-                result.Invoke(AckResponseCode.Error, new ResponseUserLoginMessage()
+                result.InvokeError(new ResponseUserLoginMessage()
                 {
                     message = UITextKeys.UI_ERROR_USER_BANNED,
                 });
@@ -103,13 +103,12 @@ namespace MultiplayerARPG.MMO
                 AccessToken = accessToken
             });
             // Response
-            result.Invoke(AckResponseCode.Success,
-                new ResponseUserLoginMessage()
-                {
-                    userId = userId,
-                    accessToken = accessToken,
-                    unbanTime = unbanTime,
-                });
+            result.InvokeSuccess(new ResponseUserLoginMessage()
+            {
+                userId = userId,
+                accessToken = accessToken,
+                unbanTime = unbanTime,
+            });
         }
 #endif
 
