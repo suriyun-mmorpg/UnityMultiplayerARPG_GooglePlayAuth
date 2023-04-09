@@ -70,11 +70,11 @@ namespace MultiplayerARPG.MMO
                 });
                 return;
             }
-            AsyncResponseData<GetUserUnbanTimeResp> unbanTimeResp = await DbServiceClient.GetUserUnbanTimeAsync(new GetUserUnbanTimeReq()
+            DatabaseApiResult<GetUserUnbanTimeResp> unbanTimeResp = await DbServiceClient.GetUserUnbanTimeAsync(new GetUserUnbanTimeReq()
             {
                 UserId = userId
             });
-            if (unbanTimeResp.ResponseCode != AckResponseCode.Success)
+            if (!unbanTimeResp.IsSuccess)
             {
                 result.InvokeError(new ResponseUserLoginMessage()
                 {
