@@ -57,11 +57,11 @@ namespace MultiplayerARPG.MMO
                 });
                 return;
             }
-            if (userPeersByUserId.ContainsKey(userId) || MapContainsUser(userId))
+            if (_userPeersByUserId.ContainsKey(userId) || MapContainsUser(userId))
             {
                 // Kick the user from game
-                if (userPeersByUserId.ContainsKey(userId))
-                    KickClient(userPeersByUserId[userId].connectionId, UITextKeys.UI_ERROR_ACCOUNT_LOGGED_IN_BY_OTHER);
+                if (_userPeersByUserId.ContainsKey(userId))
+                    KickClient(_userPeersByUserId[userId].connectionId, UITextKeys.UI_ERROR_ACCOUNT_LOGGED_IN_BY_OTHER);
                 ClusterServer.KickUser(userId, UITextKeys.UI_ERROR_ACCOUNT_LOGGED_IN_BY_OTHER);
                 RemoveUserPeerByUserId(userId, out _);
                 result.InvokeError(new ResponseUserLoginMessage()
@@ -95,8 +95,8 @@ namespace MultiplayerARPG.MMO
             userPeerInfo.connectionId = requestHandler.ConnectionId;
             userPeerInfo.userId = userId;
             userPeerInfo.accessToken = accessToken = Regex.Replace(Convert.ToBase64String(Guid.NewGuid().ToByteArray()), "[/+=]", "");
-            userPeersByUserId[userId] = userPeerInfo;
-            userPeers[requestHandler.ConnectionId] = userPeerInfo;
+            _userPeersByUserId[userId] = userPeerInfo;
+            _userPeers[requestHandler.ConnectionId] = userPeerInfo;
             await DbServiceClient.UpdateAccessTokenAsync(new UpdateAccessTokenReq()
             {
                 UserId = userId,
