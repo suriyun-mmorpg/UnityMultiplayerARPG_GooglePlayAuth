@@ -1,6 +1,5 @@
 ﻿#if (UNITY_EDITOR || UNITY_SERVER) && UNITY_STANDALONE
 using Cysharp.Threading.Tasks;
-using MiniJSON;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -11,6 +10,8 @@ using UnityEngine;
 
 namespace MultiplayerARPG.MMO
 {
+    using MiniJSON;
+
     public partial class CentralNetworkManager
     {
         [Header("Google Play Login")]
