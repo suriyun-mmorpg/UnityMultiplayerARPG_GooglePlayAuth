@@ -17,7 +17,6 @@ namespace MultiplayerARPG.MMO
         [Header("Google Play Login")]
         public ushort googlePlayLoginRequestType = 211;
 
-#if (UNITY_EDITOR || UNITY_SERVER) && UNITY_STANDALONE
         [DevExtMethods("RegisterServerMessages")]
         protected void RegisterServerMessages_GooglePlayLogin()
         {
@@ -28,6 +27,7 @@ namespace MultiplayerARPG.MMO
             RequestHandlerData requestHandler, RequestGooglePlayLoginMessage request,
             RequestProceedResultDelegate<ResponseUserLoginMessage> result)
         {
+#if (UNITY_EDITOR || UNITY_SERVER) && UNITY_STANDALONE
             string userId = string.Empty;
             string accessToken = string.Empty;
             long unbanTime = 0;
@@ -110,8 +110,8 @@ namespace MultiplayerARPG.MMO
                 accessToken = accessToken,
                 unbanTime = unbanTime,
             });
-        }
 #endif
+        }
 
         public bool RequestGooglePlayLogin(string idToken, ResponseDelegate<ResponseUserLoginMessage> callback)
         {
