@@ -2,7 +2,7 @@
 
 namespace MultiplayerARPG.MMO
 {
-    public class RequestGooglePlayLoginMessage : INetSerializable
+    public struct RequestGooglePlayLoginMessage : INetSerializable
     {
         public string idToken;
 
