@@ -6,9 +6,8 @@ namespace MultiplayerARPG.MMO
 {
     public partial class SQLiteDatabase
     {
-        public override async UniTask<string> GooglePlayLogin(string gpgId, string email)
+        public override UniTask<string> GooglePlayLogin(string gpgId, string email)
         {
-            await UniTask.Yield();
             string id = string.Empty;
             ExecuteReader((reader) =>
             {
@@ -29,7 +28,7 @@ namespace MultiplayerARPG.MMO
                     new SqliteParameter("@email", email),
                     new SqliteParameter("@authType", AUTH_TYPE_GOOGLE_PLAY));
             }
-            return id;
+            return UniTask.FromResult(id);
         }
     }
 }
