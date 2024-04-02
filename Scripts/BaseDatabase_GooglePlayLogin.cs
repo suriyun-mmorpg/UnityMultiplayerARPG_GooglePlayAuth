@@ -1,4 +1,4 @@
-﻿#if (UNITY_EDITOR || UNITY_SERVER) && UNITY_STANDALONE
+﻿#if (UNITY_EDITOR || !EXCLUDE_SERVER_CODES) && UNITY_STANDALONE
 using Cysharp.Threading.Tasks;
 
 namespace MultiplayerARPG.MMO

@@ -1,4 +1,4 @@
-﻿#if (UNITY_EDITOR || UNITY_SERVER) && UNITY_STANDALONE
+﻿#if (UNITY_EDITOR || !EXCLUDE_SERVER_CODES) && UNITY_STANDALONE
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -27,7 +27,7 @@ namespace MultiplayerARPG.MMO
             RequestHandlerData requestHandler, RequestGooglePlayLoginMessage request,
             RequestProceedResultDelegate<ResponseUserLoginMessage> result)
         {
-#if (UNITY_EDITOR || UNITY_SERVER) && UNITY_STANDALONE
+#if (UNITY_EDITOR || !EXCLUDE_SERVER_CODES) && UNITY_STANDALONE
             string userId = string.Empty;
             string accessToken = string.Empty;
             long unbanTime = 0;
