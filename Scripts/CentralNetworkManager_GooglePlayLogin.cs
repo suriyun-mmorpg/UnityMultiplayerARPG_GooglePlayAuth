@@ -95,7 +95,7 @@ namespace MultiplayerARPG.MMO
             CentralUserPeerInfo userPeerInfo = new CentralUserPeerInfo();
             userPeerInfo.connectionId = requestHandler.ConnectionId;
             userPeerInfo.userId = userId;
-            userPeerInfo.accessToken = accessToken = Regex.Replace(Convert.ToBase64String(Guid.NewGuid().ToByteArray()), "[/+=]", "");
+            userPeerInfo.accessToken = accessToken = DataManager.GenerateAccessToken(userId);
             _userPeersByUserId[userId] = userPeerInfo;
             _userPeers[requestHandler.ConnectionId] = userPeerInfo;
             await DatabaseClient.UpdateAccessTokenAsync(new UpdateAccessTokenReq()
