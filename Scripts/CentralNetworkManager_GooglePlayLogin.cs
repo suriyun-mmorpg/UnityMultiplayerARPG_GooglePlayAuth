@@ -28,6 +28,7 @@ namespace MultiplayerARPG.MMO
             RequestProceedResultDelegate<ResponseUserLoginMessage> result)
         {
 #if (UNITY_EDITOR || !EXCLUDE_SERVER_CODES) && UNITY_STANDALONE
+            long connectionId = requestHandler.ConnectionId;
             string userId = string.Empty;
             string accessToken = string.Empty;
             long unbanTime = 0;
@@ -92,17 +93,30 @@ namespace MultiplayerARPG.MMO
                 });
                 return;
             }
-            CentralUserPeerInfo userPeerInfo = new CentralUserPeerInfo();
-            userPeerInfo.connectionId = requestHandler.ConnectionId;
-            userPeerInfo.userId = userId;
-            userPeerInfo.accessToken = accessToken = DataManager.GenerateAccessToken(userId);
-            _userPeersByUserId[userId] = userPeerInfo;
-            _userPeers[requestHandler.ConnectionId] = userPeerInfo;
-            await DatabaseClient.UpdateAccessTokenAsync(new UpdateAccessTokenReq()
+            // Generate new access token
+            accessToken = DataManager.GenerateAccessToken(userId);
+            DatabaseApiResult updateAccessTokenResp = await DatabaseClient.UpdateAccessTokenAsync(new UpdateAccessTokenReq()
             {
                 UserId = userId,
-                AccessToken = accessToken
+                AccessToken = accessToken,
             });
+            if (!updateAccessTokenResp.IsSuccess)
+            {
+                result.InvokeError(new ResponseUserLoginMessage()
+                {
+                    message = UITextKeys.UI_ERROR_INTERNAL_SERVER_ERROR,
+                });
+                return;
+            }
+            // Update peer info
+            CentralUserPeerInfo userPeerInfo = new CentralUserPeerInfo()
+            {
+                connectionId = connectionId,
+                userId = userId,
+                accessToken = accessToken,
+            };
+            _userPeersByUserId[userId] = userPeerInfo;
+            _userPeers[connectionId] = userPeerInfo;
             // Response
             result.InvokeSuccess(new ResponseUserLoginMessage()
             {
