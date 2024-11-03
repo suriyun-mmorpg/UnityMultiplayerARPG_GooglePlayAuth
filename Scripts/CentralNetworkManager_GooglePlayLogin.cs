@@ -59,7 +59,7 @@ namespace MultiplayerARPG.MMO
                 });
                 return;
             }
-            if (_userPeersByUserId.ContainsKey(userId) || MapContainsUser(userId))
+            if (_userPeersByUserId.ContainsKey(userId) || await MapContainsUser(userId))
             {
                 // Kick the user from game
                 if (_userPeersByUserId.ContainsKey(userId))
