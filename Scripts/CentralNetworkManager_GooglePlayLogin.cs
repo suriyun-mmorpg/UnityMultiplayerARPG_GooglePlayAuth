@@ -2,9 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Text.RegularExpressions;
 #endif
 using Cysharp.Threading.Tasks;
+using Insthync.DevExtension;
 using LiteNetLibManager;
 using UnityEngine;
 
