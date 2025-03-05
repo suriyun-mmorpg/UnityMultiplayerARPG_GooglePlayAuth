@@ -15,7 +15,7 @@ namespace MultiplayerARPG.MMO
                     id = reader.GetString(0);
             }, "SELECT id FROM userlogin WHERE username=@username AND password=@password AND authType=@authType LIMIT 1",
                 new SqliteParameter("@username", "g_" + gpgId),
-                new SqliteParameter("@password", gpgId.PasswordHash()),
+                new SqliteParameter("@password", UserLoginManager.GetHashedPassword(gpgId)),
                 new SqliteParameter("@authType", AUTH_TYPE_GOOGLE_PLAY));
 
             if (string.IsNullOrEmpty(id))
@@ -24,7 +24,7 @@ namespace MultiplayerARPG.MMO
                 ExecuteNonQuery("INSERT INTO userlogin (id, username, password, email, authType) VALUES (@id, @username, @password, @email, @authType)",
                     new SqliteParameter("@id", id),
                     new SqliteParameter("@username", "g_" + gpgId),
-                    new SqliteParameter("@password", gpgId.PasswordHash()),
+                    new SqliteParameter("@password", UserLoginManager.GetHashedPassword(gpgId)),
                     new SqliteParameter("@email", email),
                     new SqliteParameter("@authType", AUTH_TYPE_GOOGLE_PLAY));
             }
