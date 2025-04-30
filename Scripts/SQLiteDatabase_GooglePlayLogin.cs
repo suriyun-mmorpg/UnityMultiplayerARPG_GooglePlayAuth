@@ -1,6 +1,6 @@
-﻿#if NET || NETCOREAPP || ((UNITY_EDITOR || UNITY_SERVER || !EXCLUDE_SERVER_CODES) && UNITY_STANDALONE)
+﻿#if (UNITY_EDITOR || UNITY_SERVER || !EXCLUDE_SERVER_CODES) && UNITY_STANDALONE
 using Cysharp.Threading.Tasks;
-using Microsoft.Data.Sqlite;
+using Mono.Data.Sqlite;
 
 namespace MultiplayerARPG.MMO
 {
